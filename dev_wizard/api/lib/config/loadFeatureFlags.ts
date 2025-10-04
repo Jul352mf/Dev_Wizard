@@ -16,10 +16,16 @@ export type FeatureFlags = z.infer<typeof FeatureFileSchema>;
 
 let cache: { data: FeatureFlags; mtimeMs: number } | null = null;
 
-const CANDIDATE_FILES = [
+// Build a robust search list that works whether cwd is repo root or dev_wizard/ subdir
+const cwd = process.cwd().replace(/\\/g, '/');
+const CANDIDATE_FILES = Array.from(new Set([
   'dev_wizard/config/features.json',
   'dev_wizard/config/features.example.json',
-];
+  'config/features.json',
+  'config/features.example.json',
+  `${cwd.endsWith('/dev_wizard') ? '' : 'dev_wizard/' }config/features.json`,
+  `${cwd.endsWith('/dev_wizard') ? '' : 'dev_wizard/' }config/features.example.json`,
+]));
 
 function firstExisting(paths: string[]): Promise<string | null> {
   return Promise.all(paths.map(async p => {
