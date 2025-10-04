@@ -237,7 +237,7 @@ export function watchWorkspace(workspacePath: string, onProjectChange?: () => vo
     }
   });
 
-  watcher.on('unlinkDir', async (dirPath) => {
+  watcher.on('unlinkDir', async (dirPath: string) => {
     const project = projectDb.getByPath(dirPath);
     if (project) {
       projectDb.delete(project.id!);
