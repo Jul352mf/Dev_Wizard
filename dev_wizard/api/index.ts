@@ -5,7 +5,7 @@ import { WebSocketServer } from 'ws';
 import path from 'path';
 import os from 'os';
 import { initializeDatabase, projectDb, taskDb, secretDb } from './database';
-import { loadFeatureFlags, getEnabledFeatures } from '../lib/config/loadFeatureFlags';
+import { loadFeatureFlags, getEnabledFeatures } from './lib/config/loadFeatureFlags';
 import { initializeProjectScanning, scanDirectory, watchWorkspace } from './scanner';
 
 const app = express();
