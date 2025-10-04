@@ -6,7 +6,9 @@ const FeatureSchema = z.object({
   description: z.string(),
 }).strict();
 
+// Allow an optional $schema property for tooling metadata while still rejecting truly unknown keys
 const FeatureFileSchema = z.object({
+  $schema: z.string().optional(),
   features: z.record(FeatureSchema),
   environment: z.string(),
   version: z.string(),
