@@ -1,0 +1,119 @@
+# Environment configuration matrix for Dev Wizard
+# Maps environment names to URLs, secret names, and feature toggles
+
+environments:
+  development:
+    name: "Development"
+    description: "Local development environment"
+    api:
+      baseUrl: "http://localhost:3001"
+      websocketUrl: "ws://localhost:3001"
+    mcp:
+      enabled: false
+      gatewayUrl: "http://localhost:8000"
+    database:
+      type: "sqlite"
+      connection: "./dev.db"
+    secrets:
+      prefix: "DEV_"
+      keychain: "dev-wizard-dev"
+    features:
+      override:
+        osKeychainIntegration: false
+        mcpIntegration: false
+
+  staging:
+    name: "Staging"
+    description: "Staging environment for testing"
+    api:
+      baseUrl: "https://staging-api.devwizard.local"
+      websocketUrl: "wss://staging-api.devwizard.local"
+    mcp:
+      enabled: true
+      gatewayUrl: "https://staging-mcp.devwizard.local"
+    database:
+      type: "postgresql"
+      connection: "${DATABASE_URL}"
+    secrets:
+      prefix: "STAGING_"
+      keychain: "dev-wizard-staging"
+    features:
+      override:
+        osKeychainIntegration: true
+        mcpIntegration: true
+        deploymentManagement: true
+
+  production:
+    name: "Production"
+    description: "Production environment"
+    api:
+      baseUrl: "https://api.devwizard.io"
+      websocketUrl: "wss://api.devwizard.io"
+    mcp:
+      enabled: true
+      gatewayUrl: "https://mcp.devwizard.io"
+    database:
+      type: "postgresql"
+      connection: "${DATABASE_URL}"
+    secrets:
+      prefix: "PROD_"
+      keychain: "dev-wizard-prod"
+    features:
+      override:
+        osKeychainIntegration: true
+        mcpIntegration: true
+        deploymentManagement: true
+        fido2Authentication: true
+
+# Service registry for agent deployments
+registry:
+  agents:
+    - id: "copilot-agent"
+      name: "GitHub Copilot Cloud Run Agent"
+      type: "langgraph"
+      endpoint: "${COPILOT_AGENT_URL}"
+      authentication:
+        method: "mtls"
+        certificatePath: "${CERT_PATH}/copilot-agent.crt"
+        keyPath: "${CERT_PATH}/copilot-agent.key"
+    
+    - id: "local-agent"
+      name: "Local Development Agent"
+      type: "langgraph"
+      endpoint: "http://localhost:8080"
+      authentication:
+        method: "none"
+
+# Workspace configuration
+workspace:
+  defaultPath: "${HOME}/workspace"
+  scanPatterns:
+    - "**/.git"
+    - "**/package.json"
+    - "**/pyproject.toml"
+    - "**/Cargo.toml"
+    - "**/go.mod"
+    - "**/mise.toml"
+    - "**/Taskfile.yml"
+    - "**/docker-compose.yml"
+    - "**/langgraph.json"
+  excludePatterns:
+    - "**/node_modules"
+    - "**/.venv"
+    - "**/venv"
+    - "**/target"
+    - "**/.git/objects"
+    - "**/dist"
+    - "**/build"
+
+# Security settings
+security:
+  mtls:
+    enabled: false
+    caPath: "${CERT_PATH}/ca.crt"
+    certPath: "${CERT_PATH}/client.crt"
+    keyPath: "${CERT_PATH}/client.key"
+  keychain:
+    service: "dev-wizard"
+    account: "${USER}"
+  sessionTimeout: 3600  # seconds
