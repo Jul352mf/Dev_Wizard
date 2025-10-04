@@ -1,0 +1,55 @@
+{
+  "$schema": "./features.schema.json",
+  "features": {
+    "projectScanning": {
+      "enabled": true,
+      "description": "Automatically scan workspace for projects"
+    },
+    "devServerManagement": {
+      "enabled": true,
+      "description": "Start, stop, and monitor development servers"
+    },
+    "taskAutomation": {
+      "enabled": true,
+      "description": "Run tasks using mise, Taskfile, or custom commands"
+    },
+    "secretsManagement": {
+      "enabled": true,
+      "description": "Manage environment variables and secrets"
+    },
+    "osKeychainIntegration": {
+      "enabled": false,
+      "description": "Store secrets in OS keychain (macOS Keychain, Windows DPAPI, Linux Secret Service)"
+    },
+    "mcpIntegration": {
+      "enabled": false,
+      "description": "Integrate with LangGraph runtime via MCP protocol"
+    },
+    "gitOperations": {
+      "enabled": true,
+      "description": "Git commit, push, pull, and PR operations"
+    },
+    "deploymentManagement": {
+      "enabled": false,
+      "description": "Deploy services to remote environments"
+    },
+    "fido2Authentication": {
+      "enabled": false,
+      "description": "Require FIDO2 hardware key for sensitive operations"
+    },
+    "configurIntegration": {
+      "enabled": false,
+      "description": "Sync secrets and configuration with Configu"
+    },
+    "agentLogging": {
+      "enabled": true,
+      "description": "Log agent actions and decisions"
+    },
+    "desktopNotifications": {
+      "enabled": true,
+      "description": "Show desktop notifications for events"
+    }
+  },
+  "environment": "development",
+  "version": "0.1.0"
+}

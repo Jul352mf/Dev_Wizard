@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, "copilot/**" ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        working-directory: dev_wizard
+        run: npm install --no-audit --no-fund
+
+      - name: Lint
+        working-directory: dev_wizard
+        run: npm run lint || echo "Lint completed with non-zero exit (soft fail initial phase)"
+
+      - name: Verify docs (bash)
+        run: bash scripts/verify-docs.sh
+
+      - name: Verify docs (PowerShell)
+        shell: pwsh
+        run: ./scripts/verify-docs.ps1
+
+      - name: Feature flags load smoke
+        working-directory: dev_wizard
+        run: | 
+          node -e "(async () => { const { loadFeatureFlags } = await import('./lib/config/loadFeatureFlags.js'); const f = await loadFeatureFlags(); console.log('Loaded features:', Object.keys(f.features).length); })();"
