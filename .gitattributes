@@ -1,0 +1,6 @@
+# Enforce LF for shell scripts and consistent text normalization
+*.sh text eol=lf
+*.ps1 text eol=crlf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.md text eol=lf

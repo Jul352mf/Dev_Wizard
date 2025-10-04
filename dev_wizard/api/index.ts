@@ -5,6 +5,7 @@ import { WebSocketServer } from 'ws';
 import path from 'path';
 import os from 'os';
 import { initializeDatabase, projectDb, taskDb, secretDb } from './database';
+import { loadFeatureFlags, getEnabledFeatures } from '../lib/config/loadFeatureFlags';
 import { initializeProjectScanning, scanDirectory, watchWorkspace } from './scanner';
 
 const app = express();
@@ -348,6 +349,18 @@ app.delete('/api/secrets/:id', (req, res) => {
   res.status(204).send();
 });
 
+// Feature flags endpoint
+app.get('/api/flags', async (req, res) => {
+  try {
+    const flags = await loadFeatureFlags();
+    const enabled = await getEnabledFeatures();
+    res.json({ flags, enabled });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'Unknown error loading flags';
+    res.status(500).json({ error: msg });
+  }
+});
+
 // Scanner endpoints
 app.post('/api/scan', async (req, res) => {
   const { path: scanPath } = req.body;
@@ -360,8 +373,9 @@ app.post('/api/scan', async (req, res) => {
       message: 'Scan completed successfully',
       projects 
     });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : 'Scan failed';
+    res.status(500).json({ error: msg });
   }
 });
 
@@ -379,8 +393,9 @@ app.post('/api/scan/directory', (req, res) => {
     } else {
       res.status(404).json({ error: 'No project found at this path' });
     }
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : 'Directory scan failed';
+    res.status(500).json({ error: msg });
   }
 });
 
