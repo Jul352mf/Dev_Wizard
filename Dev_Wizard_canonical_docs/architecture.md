@@ -12,6 +12,15 @@ Dev Wizard is a cross‑platform desktop and web application that sits at the i
    * **Git repositories and CI** – GitHub CLI, `git` and `gh` for cloning and committing.  CI/CD pipelines are triggered externally; the tool only performs local commits and pushes.
    * **Feature flags and environment matrix** – a `config/features.json` file provides runtime toggles【844344696133301†L26-L30】; `infra/environments.yaml` maps dev/stage/prod URLs and secret names【844344696133301†L58-L59】.
 
+   ## Repository strategy
+
+   Originally the team considered integrating Dev Wizard into the larger project's monorepo. After review we decided to keep Dev Wizard as a standalone repository. This simplifies release cadence, makes contributor workflow lighter, and reduces coupling during early development. The project will expose a clear HTTP API surface so it can later be integrated with the broader system (for example, the monorepo services can call its REST/WebSocket endpoints or an authenticated MCP proxy). Key points:
+
+   - Standalone repo for faster iteration, independent CI/CD, and clearer ownership.
+   - Maintain a small, well-documented API contract (REST + WebSocket) for integrations.
+   - Use feature flags and an environment matrix to remain compatible with the JAGI blueprint while avoiding monorepo constraints.
+   - Provide migration notes in the repo README for any future move into a monorepo if needed.
+
 ## Component diagram
 
 **UI (Next.js + Electron)**
@@ -33,6 +42,25 @@ Dev Wizard is a cross‑platform desktop and web application that sits at the i
 
 * **PostgreSQL database:** stores project metadata, task definitions, secrets metadata (not the secret values), logs, configuration overrides and audit events.  For cross‑platform compatibility the database runs in a container using Docker Compose or is bundled with the Electron app using SQLite during development; for production a full Postgres instance is recommended.
 * **File system watchers:** monitors the workspace directory for file changes (new projects, updated config files) and triggers re‑scans.
+
+## Additional capabilities and refinements
+
+The following capabilities strengthen Dev Wizard's value as a developer-facing tool and reflect the updated strategy:
+
+- Cross‑platform parity: ensure feature parity and consistent behaviour across Windows and Linux (in addition to macOS). This includes consistent keychain/secret handling, path semantics, process management and packaging/test flows so users get the same experience on supported platforms.
+- PostgreSQL-first, configurable: adopt PostgreSQL as the recommended default from day one while keeping the storage layer pluggable. Local development can use SQLite or an embedded option; Docker Compose with Postgres is the recommended reproducible path for development and CI.
+- Dev‑container support: detect and honour `devcontainer.json` and similar configuration so users can boot consistent containerised environments (Codespaces-style) directly from the tool.
+- Project scaffolding templates: provide a small set of templates (Node.js app, Python API, LangGraph agent) and a guided wizard that generates project skeletons and default `mise.toml`/`Taskfile.yml` entries.
+- Environment diff viewer: visual diffs for environment variables across dev/stage/prod with colour highlights for additions, removals and changed values to reduce deployment misconfigurations.
+- Dependency and toolchain checks: scanner detects outdated dependencies or missing tool versions and suggests remediation; integrates with mise-managed tool versions where available.
+- Enhanced command palette: extend quick actions ("jump to logs", "open terminal at project root", "create environment variable", "re-run last task") to improve discoverability and speed.
+- AI‑assisted configuration: optional LLM-based helpers that analyse project files to suggest run/test commands, infer `.env.example` entries, and provide setup guidance. Respect privacy: allow local model usage or explicit opt‑in for remote inference.
+- Import/export profiles: enable saving and sharing project configuration profiles (tasks, env matrices, secrets schema) so teams can adopt consistent setups.
+- Offline mode and caching: cache configuration and secrets locally (encrypted) and queue network actions to be executed when connectivity is restored.
+- Notification hooks: desktop notifications, webhooks or email alerts for long-running tasks and deployment results so users can step away safely.
+- Customization hooks and plugin API: a lightweight extension API for power users to add actions, visualisations or integrations without changing core code.
+
+Each capability should be scoped and prioritised in the roadmap; immediate priorities are PostgreSQL support, cross‑platform parity, and devcontainer detection, followed by scaffolding templates and dependency checks.
 
 **External systems**
 
