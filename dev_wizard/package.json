@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "api:compile": "tsc -p api/tsconfig.json",
-    "api:dev": "npm run api:compile && node dist/api/index.js",
+    "api:dev": "ts-node -P api/tsconfig.json api/index.ts",
     "electron:compile": "tsc -p electron/tsconfig.json",
     "electron:dev": "concurrently \"cross-env NODE_ENV=development npm run dev\" \"wait-on http://localhost:3000 && cross-env NODE_ENV=development npm run electron:start\"",
     "electron:start": "npm run electron:compile && electron .",
@@ -51,6 +51,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
     "typescript": "^5",
     "wait-on": "^9.0.1"
   },
