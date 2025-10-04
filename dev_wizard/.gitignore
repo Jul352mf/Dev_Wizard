@@ -48,3 +48,9 @@ next-env.d.ts
 # config files (use .example versions)
 /config/features.json
 /infra/environments.yaml
+
+# database files
+*.db
+*.db-shm
+*.db-wal
+/dev_wizard.db
