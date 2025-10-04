@@ -131,6 +131,34 @@ if (existingProjects.length === 0) {
 }
 
 // Routes
+app.get('/', (req, res) => {
+  const projectsCount = projectDb.getAll().length;
+  const info = {
+    name: 'Dev Wizard API',
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    projects: projectsCount,
+    endpoints: [
+      '/',
+      '/api/health',
+      '/api/projects',
+      '/api/projects/:id',
+      '/api/tasks',
+      '/api/tasks/:id',
+      '/api/secrets',
+      '/api/secrets/:id',
+      '/api/flags',
+      '/api/scan',
+      '/api/scan/directory'
+    ]
+  };
+
+  if (req.accepts('html')) {
+    res.send(`<!DOCTYPE html><html><head><title>Dev Wizard API</title><style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,sans-serif;padding:32px;line-height:1.4;background:#111;color:#eee} code{background:#222;padding:2px 4px;border-radius:4px} a{color:#6ab7ff;text-decoration:none} h1{margin-top:0} ul{list-style:disc;margin-left:24px}</style></head><body><h1>Dev Wizard API</h1><p>Status: <strong>ok</strong></p><p>Projects in DB: <strong>${projectsCount}</strong></p><h2>Endpoints</h2><ul>${info.endpoints.map(e => `<li><code>${e}</code></li>`).join('')}</ul><p>JSON: <code>curl http://localhost:${PORT}/</code></p></body></html>`);
+  } else {
+    res.json(info);
+  }
+});
 app.get('/api/health', (req, res) => {
   const projects = projectDb.getAll();
   res.json({ 
